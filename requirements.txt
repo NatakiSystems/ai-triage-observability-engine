@@ -1,0 +1,14 @@
+# PINNED ON PURPOSE. LangChain's API changes fast and most tutorials online are
+# written for versions that no longer exist. If everyone installs the same
+# versions, a bug is a real bug instead of a version mismatch nobody can see.
+#
+# Do not bump these mid-project. If you think you need a newer version, raise
+# it with the group first.
+
+langchain-openai==1.5.1
+langchain-core==1.5.5
+pydantic==2.13.4
+python-dotenv==1.0.1
+
+# Optional: LangSmith tracing. See .env.example for setup.
+# langsmith==0.4.42
