@@ -68,52 +68,52 @@ with her rather than both editing it.
 
 ## Task 3 — Add real metrics to the run summary
 
-Open `logging_utils.py`, find `summary()`. Right now it just counts events. Make
-it produce the numbers the team needs for the deck:
+Open `logging_utils.py`. It's four plain functions, no classes:
+
+- `start_run()` makes a new log file and hands back its path
+- `log_event(log_path, ...)` writes one line to it
+- `read_events(log_path)` reads the lines back
+- `summarize(log_path)` turns them into numbers
+
+`summarize()` already computes automation rate and average attempts. Your job is
+the metric it's missing: **elapsed wall-clock time.**
+
+In `main.py`, log one extra event at the start of the run:
 
 ```python
-def summary(self):
-    counts = {}
-    attempts_per_ticket = {}
-
-    for event in self.events:
-        counts[event["event_type"]] = counts.get(event["event_type"], 0) + 1
-        if event["event_type"] == "draft_created":
-            tid = event["ticket_id"]
-            attempts_per_ticket[tid] = max(attempts_per_ticket.get(tid, 0),
-                                           event.get("attempt", 1))
-
-    total = counts.get("triage_complete", 0)
-    auto = counts.get("auto_sent", 0)
-    escalated = counts.get("escalated_to_human", 0)
-    avg_attempts = (sum(attempts_per_ticket.values()) / len(attempts_per_ticket)
-                    if attempts_per_ticket else 0)
-
-    return {
-        "run_id": self.run_id,
-        "log_file": self.path,
-        "tickets_processed": total,
-        "auto_sent": auto,
-        "escalated_to_human": escalated,
-        "automation_rate": round(auto / total * 100, 1) if total else 0,
-        "avg_attempts_per_ticket": round(avg_attempts, 2),
-        "retries_needed": counts.get("draft_created", 0) - total,
-        "event_counts": counts,
-    }
+log_event(log_path, "run_started", "-", {})
 ```
 
-**Add wall-clock time too.** Record `self.started_at = datetime.now()` in
-`__init__`, then compute elapsed seconds in `summary()`. Turnaround time is one
-of the four questions the pitch has to answer, so we need a real number.
-
-Test it:
+Then in `summarize()`, take the timestamp of the first event and the last one,
+and subtract them:
 
 ```python
-from logging_utils import RunLogger
-logger = RunLogger()
-logger.log("triage_complete", "T1", {"category": "billing"})
-logger.log("auto_sent", "T1", {"draft": "hello"})
-print(logger.summary())
+from datetime import datetime
+
+if events:
+    started = datetime.fromisoformat(events[0]["timestamp"])
+    ended = datetime.fromisoformat(events[-1]["timestamp"])
+    elapsed_seconds = (ended - started).total_seconds()
+else:
+    elapsed_seconds = 0
+```
+
+Add `elapsed_seconds` and `seconds_per_ticket` to the dict that `summarize()`
+returns.
+
+Turnaround time is one of the four questions the pitch has to answer, so we
+need a real number for it.
+
+Test your changes without running the whole pipeline:
+
+```python
+import logging_utils as L
+
+path = L.start_run()
+L.log_event(path, "triage_complete", "T1", {"category": "billing"})
+L.log_event(path, "draft_created", "T1", {"attempt": 1, "draft": "hi"})
+L.log_event(path, "auto_sent", "T1", {"draft": "hi"})
+print(L.summarize(path))
 ```
 
 ---
@@ -276,8 +276,8 @@ afterward. We traded pre-approval for a full audit trail, deliberately."
 
 ## Where you'll get stuck
 
-**"The log file is empty."** The logger only writes when `main.py` runs the
-pipeline. `--review` reads the queue, it doesn't create log events.
+**"The log file is empty."** `log_event` only gets called when `main.py` runs
+the pipeline. `--review` reads the queue, it doesn't create log events.
 
 **"`input()` doesn't work."** It won't run inside a Jupyter notebook or some
 IDE consoles. Run it from a real terminal.

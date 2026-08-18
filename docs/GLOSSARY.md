@@ -87,8 +87,8 @@ function `run_triage` and hands it a ticket.
 
 **Dictionary** (dict) — labeled values: `{"category": "billing"}`.
 
-**Class** — a blueprint for an object. `RunLogger` is a class; `logger` is one
-made from it.
+**Class** — a blueprint for making objects. Our Pydantic models in `state.py`
+are classes; a `Ticket` you create from one is an object.
 
 **Object / instance** — a specific thing made from a class.
 

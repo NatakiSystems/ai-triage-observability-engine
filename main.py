@@ -30,7 +30,7 @@ def main():
         print(">> MOCK MODE: no API calls will be made.\n")
 
     # Imported after the mock flag is set, so the client picks it up.
-    from logging_utils import RunLogger
+    from logging_utils import start_run, summarize
     from orchestrator import process_ticket
     from tools.ticket_source import load_tickets
     from approval_queue import review_queue
@@ -47,12 +47,12 @@ def main():
     tickets = load_tickets(limit=args.limit)
     print(f"Loaded {len(tickets)} tickets.\n")
 
-    logger = RunLogger()
+    log_path = start_run()
     results = []
 
     for ticket in tickets:
         print(f"[{ticket.ticket_id}] {ticket.subject[:55]}")
-        run = process_ticket(ticket, logger)
+        run = process_ticket(ticket, log_path)
         results.append(run)
         marker = "AUTO" if run.status == "auto_sent" else "HUMAN"
         print(f"    -> {run.triage.category:10s} | {marker:5s} | "
@@ -67,7 +67,7 @@ def main():
     print(f"Needs human:      {human}")
     if results:
         print(f"Automation rate:  {auto / len(results) * 100:.0f}%")
-    print(f"Full log:         {logger.path}")
+    print(f"Full log:         {log_path}")
     print("=" * 60)
     print("\nRun `python main.py --review` to work the approval queue.")
 

@@ -63,6 +63,6 @@ def run_critic(ticket: Ticket, triage: TriageResult, policy_text: str,
     # than trusting the model to remember it every single time. Worth calling
     # out in the pitch - not every guardrail should be a prompt.
     if triage.confidence < CONFIDENCE_FLOOR:
-        verdict = verdict.model_copy(update={"needs_human": True})
+        verdict.needs_human = True
 
     return verdict

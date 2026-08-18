@@ -18,6 +18,7 @@ from agents.drafter import run_drafter
 from agents.critic import run_critic
 from tools.policy_lookup import lookup_policy
 from approval_queue import add_to_queue
+from logging_utils import log_event
 
 
 # The retry budget. Two means: first draft, one revision, then give up and
@@ -26,13 +27,13 @@ from approval_queue import add_to_queue
 MAX_ATTEMPTS = 2
 
 
-def process_ticket(ticket: Ticket, logger) -> TicketRun:
+def process_ticket(ticket: Ticket, log_path: str) -> TicketRun:
     """
     Run one ticket end to end.
 
     Args:
         ticket: the Ticket to process.
-        logger: a RunLogger instance.
+        log_path: where to write the audit trail, from start_run().
 
     Returns:
         TicketRun with final status set.
@@ -41,7 +42,7 @@ def process_ticket(ticket: Ticket, logger) -> TicketRun:
 
     # --- Step 1: triage -----------------------------------------------------
     run.triage = run_triage(ticket)
-    logger.log("triage_complete", ticket.ticket_id, {
+    log_event(log_path, "triage_complete", ticket.ticket_id, {
         "category": run.triage.category,
         "priority": run.triage.priority,
         "confidence": run.triage.confidence,
@@ -54,7 +55,7 @@ def process_ticket(ticket: Ticket, logger) -> TicketRun:
     # is for the audit trail, not for the next agent, so it can't bias the
     # drafter. Worth flagging in the pitch as a deliberate choice.
     run.policy_text = lookup_policy(run.triage.category)
-    logger.log("policy_retrieved", ticket.ticket_id, {
+    log_event(log_path, "policy_retrieved", ticket.ticket_id, {
         "category": run.triage.category,
         "policy_chars": len(run.policy_text),
     })
@@ -69,7 +70,7 @@ def process_ticket(ticket: Ticket, logger) -> TicketRun:
             policy_text=run.policy_text,
             revision_notes=run.revision_notes,
         )
-        logger.log("draft_created", ticket.ticket_id, {
+        log_event(log_path, "draft_created", ticket.ticket_id, {
             "attempt": run.attempts,
             "draft": run.draft,
         })
@@ -80,7 +81,7 @@ def process_ticket(ticket: Ticket, logger) -> TicketRun:
             policy_text=run.policy_text,
             draft=run.draft,
         )
-        logger.log("critic_verdict", ticket.ticket_id, {
+        log_event(log_path, "critic_verdict", ticket.ticket_id, {
             "attempt": run.attempts,
             "approved": run.verdict.approved,
             "needs_human": run.verdict.needs_human,
@@ -106,13 +107,13 @@ def process_ticket(ticket: Ticket, logger) -> TicketRun:
     # to justify it.
     if run.verdict and run.verdict.approved and not run.verdict.needs_human:
         run.status = "auto_sent"
-        logger.log("auto_sent", ticket.ticket_id, {"draft": run.draft})
+        log_event(log_path, "auto_sent", ticket.ticket_id, {"draft": run.draft})
     else:
         run.status = "awaiting_human"
         add_to_queue(run)
         reason = ("flagged by critic" if run.verdict and run.verdict.needs_human
                   else f"not approved after {run.attempts} attempts")
-        logger.log("escalated_to_human", ticket.ticket_id, {
+        log_event(log_path, "escalated_to_human", ticket.ticket_id, {
             "reason": reason,
             "attempts": run.attempts,
             "draft": run.draft,

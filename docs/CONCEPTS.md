@@ -1,7 +1,7 @@
 # The handful of things in this codebase you might not have seen yet
 
 If you've done an intro Python course, you know everything here *except*
-roughly seven constructs. Here they are, explained in terms of our actual code.
+roughly six constructs. Here they are, explained in terms of our actual code.
 Read this once and the whole repo opens up.
 
 ---
@@ -124,38 +124,40 @@ hand-write paths with slashes in them.
 
 ---
 
-## 5. Classes and `self` — `RunLogger`
+## 5. `with open(...) as f:` — reading and writing files
 
-**Where:** `logging_utils.py`. Nataki, this one's yours.
-
-A class is a blueprint. `RunLogger` is a blueprint for a thing that remembers
-where it's writing and what it's written so far.
+**Where:** `logging_utils.py`, `tools/policy_lookup.py`, `tools/ticket_source.py`
 
 ```python
-class RunLogger:
-    def __init__(self, run_id=None):        # runs once, when you create one
-        self.run_id = run_id or datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.path = os.path.join(LOG_DIR, f"run_{self.run_id}.jsonl")
-        self.events = []
-
-    def log(self, event_type, ticket_id, payload):
-        ...
-        self.events.append(event)            # reaches the SAME list every time
+with open(log_path, "a", encoding="utf-8") as f:
+    f.write(json.dumps(event) + "\n")
 ```
 
-`self` means "this particular logger." When `main.py` does
-`logger = RunLogger()`, that object now carries its own `run_id`, `path`, and
-`events` list around with it. Every call to `logger.log(...)` appends to *that*
-logger's list.
+Three parts:
 
-Why not just a function? Because a plain function would forget the filename and
-the running event list between calls. We'd have to pass them in every time. The
-class holds them for us.
+- **`open(path, mode)`** — the mode is one letter. `"r"` read, `"w"` write
+  (erases what was there), `"a"` append (adds to the end). Our log uses `"a"`
+  so each event adds a line instead of wiping the file.
+- **`as f`** — `f` is now the open file. Read it with `f.read()`, write with
+  `f.write()`.
+- **`with`** — closes the file automatically when the block ends, even if
+  something crashes partway. Without it you can lose data that was still
+  sitting in a buffer. Always use `with`.
 
-**Rule of thumb:** inside a class, any variable you want to survive between
-method calls needs `self.` in front of it.
+`encoding="utf-8"` tells Python to expect any character, including accents and
+emoji. Leaving it off works on a Mac and breaks on Windows, which is a genuinely
+annoying bug to chase down. Just always include it.
 
----
+Reading line by line:
+
+```python
+with open(log_path, encoding="utf-8") as f:
+    for line in f:
+        event = json.loads(line)
+```
+
+`json.dumps` turns a Python dict into a string. `json.loads` turns it back.
+Dump to disk, load from disk.
 
 ## 6. `**payload` — merging one dict into another
 
