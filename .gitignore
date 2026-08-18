@@ -1,0 +1,16 @@
+.env
+*.key
+credentials.json
+logs/*.jsonl
+logs/approval_queue.json
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
