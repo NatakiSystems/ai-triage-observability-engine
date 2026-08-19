@@ -22,8 +22,7 @@ your first pull request worked.
 >
 
 **Nataki Boykin** — Logging & Observability Engineer
->
-
+>I am a New Orleans Saints fan.
 ---
 
 Project: Northstar Support Co. agentic ticket triage
