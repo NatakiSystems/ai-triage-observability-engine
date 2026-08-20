@@ -1,3 +1,4 @@
+# Reviewed by Lance - confirmed load_tickets() and structure, 8/19
 """
 Ticket source: loads incoming tickets from our fake "support inbox".
 
