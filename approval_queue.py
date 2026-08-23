@@ -41,23 +41,55 @@ def load_queue():
 
 def review_queue():
     """
-    Interactive review loop for the demo.
-
-    TODO (Nataki): print each queued reply, show WHY it was flagged, and let
-    the reviewer type a/r/s (approve, reject, skip). Record the decision back
-    into the log so we can show the audit trail is closed-loop.
+    Interactive review loop. This is the human checkpoint demonstrated live.
     """
     queue = load_queue()
     if not queue:
-        print("Approval queue is empty. Nothing waiting on a human.")
+        print("\nApproval queue is empty. Nothing waiting on a human.\n")
         return
 
     print(f"\n{len(queue)} replies waiting for human review.\n")
-    for item in queue:
-        print("-" * 60)
-        print(f"Ticket {item['ticket']['ticket_id']}: {item['ticket']['subject']}")
+    decisions = []
+
+    for i, item in enumerate(queue, start=1):
+        ticket = item.get("ticket") or {}
         verdict = item.get("verdict") or {}
-        print(f"Flagged because: {verdict.get('reasoning', 'unknown')}")
-        print(f"\nDraft reply:\n{item.get('draft', '(none)')}\n")
-    print("-" * 60)
-    print("TODO (Nataki): add the approve/reject input loop here.")
+
+        print("=" * 68)
+        print(f"[{i}/{len(queue)}] Ticket {ticket.get('ticket_id', 'Unknown')}")
+        print(f"From:     {ticket.get('customer_name', 'Customer')}")
+        print(f"Subject:  {ticket.get('subject', '(no subject)')}")
+        print(f"\nCustomer wrote:\n {ticket.get('body', '(no body)')}")
+
+        #Hightlight the flag rationale clearly for the human reviewer
+        print(f"\nFLAGGED BECAUSE: {verdict.get('reasoning', 'Flagged for supervisor review')}")
+        if verdict.get("issues"):
+            print("Open issues:")
+            for issue in verdict["issues"]:
+                print(f" - {issue}")
+
+        draft_text = item.get("draft", "(none)")
+        print(f"\nDRAFTED REPLY (attempt {item.get('attempts', 1)}):")
+        print(" " + draft_text.replace("\n", "\n "))
+        print()
+
+        choice = ""
+        while choice not in ("a", "r", "s"):
+            choice = input("[a]pprove, [r]eject, [s]kip > ").strip().lower()
+
+        decision_map = {"a": "approved", "r": "rejected", "s": "skipped"}
+        decisions.append({
+            "ticket_id": ticket.get("ticket_id"),
+            "decision": decision_map[choice]
+        })
+        print()
+
+    print("=" * 68)
+    approved_count = sum(1 for d in decisions if d["decision"] == "approved")
+    rejected_count = sum(1 for d in decisions if d["decision"] == "rejected")
+    skipped_count = sum(1 for d in decisions if d["decision"] == "skipped")
+
+    print(f"Review session completed. Review {len(decisions)} tickets:")
+    print(f" - {approved_count} approved")
+    print(f" - {rejected_count} rejected")
+    print(f" - {skipped_count} skipped\n")
