@@ -35,16 +35,21 @@ def load_tickets(limit=None):
     tickets = []
     with open(DATA_PATH, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
-            # TODO (Lance): a row with a missing column will blow up here.
-            # Wrap this in a try/except, skip bad rows, and print a warning.
-            tickets.append(Ticket(
-                ticket_id=row["ticket_id"],
-                customer_name=row["customer_name"],
-                subject=row["subject"],
-                body=row["body"],
-                received_at=row["received_at"],
-            ))
+        for row_number, row in enumerate(reader, start=2):
+            try:
+                # TODO (Lance): a row with a missing column will blow up here.
+                # Wrap this in a try/except, skip bad rows, and print a warning.
+                tickets.append(Ticket(
+                    ticket_id=row["ticket_id"],
+                    customer_name=row["customer_name"],
+                    subject=row["subject"],
+                    body=row["body"],
+                    received_at=row["received_at"],
+                ))
+            except Exception as e:
+                print(f" WARNING: skipping row {row_number} in tickets.csv - {e}")
+                continue   
+
             if limit and len(tickets) >= limit:
                 break
     return tickets
