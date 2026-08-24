@@ -18,7 +18,7 @@ def run_triage(ticket: Ticket) -> TriageResult:
     subject = (ticket.subject or "").strip()
     body = (ticket.body or "").strip()[:500] #truncate to 500 characters to avoid sending too much text to the LLM
 
-    user_message = f"Subject: {ticket.subject}\n\nBody: {ticket.body}"
+    user_message = f"Subject: {subject}\n\nBody: {body}"
 
     return call_structured(
         prompt_name="triage",
