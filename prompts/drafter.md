@@ -23,7 +23,16 @@ problems. Do not rewrite the parts that were fine.
 
 Return only the reply text. No subject line, no commentary, no markdown.
 
-<!--
-TODO (Mitchy): rule 2 is the one that breaks most often. When the critic
-starts rejecting drafts for invented numbers, this is the section to tighten.
--->
+# FEW-SHOT REFRESHER EXAMPLES FOR RULE 2 ENFORCEMENT
+
+### EXAMPLE 1: Standard Billing Refund
+*   **Policy Given:** "Duplicate Charges: Verify account. Issue full refund for duplicate transaction. Timeline: Refund   appears in 3 to 5 business days."
+*   **Customer Ticket:** "hey i was charged $49 twice on august 3rd. can i get a refund? thanks, Dana"
+*   **Approved Output:**
+    Hi Dana,
+    
+    Thank you for reaching out to us. I have verified your account history and confirmed the duplicate charge from August 3rd. I have processed a full refund for this duplicate transaction. The funds should appear back on your original payment method within 3 to 5 business days.
+    
+    Northstar Support
+
+
