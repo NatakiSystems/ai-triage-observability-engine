@@ -120,7 +120,14 @@ def call_structured(prompt_name, user_message, schema, agent_name, temperature):
         time.sleep(0.1)     # pretend latency so the demo feels real
         return MOCK_TRIAGE if agent_name == "triage" else MOCK_CRITIC
 
-    model = get_model(temperature).with_structured_output(schema)
+        # method="function_calling" matters. LangChain's default is a strict JSON
+    # schema format that OpenAI supports and DeepSeek does not - you get a
+    # 400 "This response_format type is unavailable now". Function calling is
+    # supported by both, and it still sends our Pydantic schema (including the
+    # Field descriptions) so we keep validation and the tuning surface.
+    model = get_model(temperature).with_structured_output(
+        schema, method="function_calling"
+    )
     return model.invoke([
         ("system", load_prompt(prompt_name)),
         ("human", user_message),
