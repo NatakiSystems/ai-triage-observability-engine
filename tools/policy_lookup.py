@@ -71,3 +71,9 @@ def lookup_policy(category):
         category,
         "NO POLICY FOUND for this category. Escalate to a human agent.",
     )
+def lookup_policy(category):
+    sections = load_policy_sections()
+    text = sections.get(category)
+    if text is None:
+        return None, False
+    return text, True
