@@ -14,6 +14,10 @@ import argparse
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()      # makes sure the .env file loads so that the LLM_API_KEY is available.
+
 
 def main():
     parser = argparse.ArgumentParser(description="Northstar ticket triage pipeline")
