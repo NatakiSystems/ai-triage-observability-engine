@@ -53,3 +53,16 @@ def load_tickets(limit=None):
             if limit and len(tickets) >= limit:
                 break
     return tickets
+
+def load_tickets_from_db(limit=None):
+    """Same as load_tickets, but reads from SQLite."""
+    import sqlite3
+    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "tickets.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    query = "SELECT * FROM tickets ORDER BY received_at"
+    if limit:
+        query += f" LIMIT {int(limit)}"
+    rows = conn.execute(query).fetchall()
+    conn.close()
+    return [Ticket(**dict(row)) for row in rows]
