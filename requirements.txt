@@ -12,3 +12,6 @@ python-dotenv==1.0.1
 
 # Optional: LangSmith tracing. See .env.example for setup.
 # langsmith==0.4.42
+
+# Streamlit for UI console. Optional, but recommended.
+streamlit==1.62.0
