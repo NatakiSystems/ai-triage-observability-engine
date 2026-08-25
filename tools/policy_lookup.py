@@ -63,6 +63,7 @@ def lookup_policy(category):
         str: the policy text, or a clear fallback message.
     """
     sections = load_policy_sections()
+    category = category.strip().lower()
 
     # TODO (Lance): decide what should happen on a miss. Returning empty text
     # means the drafter writes from nothing, which is exactly the failure mode
