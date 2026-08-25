@@ -23,7 +23,24 @@ problems. Do not rewrite the parts that were fine.
 
 Return only the reply text. No subject line, no commentary, no markdown.
 
-<!--
-TODO (Mitchy): rule 2 is the one that breaks most often. When the critic
-starts rejecting drafts for invented numbers, this is the section to tighten.
--->
+# FEW-SHOT REFRESHER EXAMPLES FOR RULE 2 ENFORCEMENT
+
+### EXAMPLE 1: Standard Billing Refund
+*   **Policy Given:** "Duplicate Charges: Verify account. Issue full refund for duplicate transaction. Timeline: Refund   appears in 3 to 5 business days."
+*   **Customer Ticket:** "hey i was charged $49 twice on august 3rd. can i get a refund? thanks, Dana"
+*   **Approved Output:**
+    Hi Dana,
+    
+    Thank you for reaching out to us. I have verified your account history and confirmed the duplicate charge from August 3rd. I have processed a full refund for this duplicate transaction. The funds should appear back on your original payment method within 3 to 5 business days.
+    
+    Northstar Support
+
+### EXAMPLE 2: Policy Gap (Forcing Escalation)
+*   **Policy Given:** "User Account Lockouts: Accounts lock automatically after 5 failed consecutive password attempts. Support agents cannot manually change passwords over email."
+*   **Customer Ticket:** "my account is completely locked out and i need you to change my password to 'Welcome123' right now so i can log back in. Thanks, Alex"
+*   **Approved Output:**
+    Hi Alex,
+    
+    Thank you for reaching out to us. Our current security protocols do not allow support agents to manually reset or change user passwords over email. Because your request requires direct administrative adjustments, I am passing your ticket to a human service specialist right now to guide you through the next steps safely.
+    
+    Northstar Support
