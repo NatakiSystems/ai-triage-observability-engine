@@ -24,8 +24,8 @@ from llm_client import call_text
 
 
 def run_drafter(ticket: Ticket, triage: TriageResult, policy_text: str,
-                revision_notes: list = None) -> str:
-    """
+                revision_notes: list[str] | None = None) -> str:
+    """  
     Draft a reply to one ticket.
 
     Args:
@@ -58,9 +58,12 @@ def run_drafter(ticket: Ticket, triage: TriageResult, policy_text: str,
             + "\n\nRewrite the reply, fixing these specific problems."
         )
 
-    return call_text(
+    result = call_text(
         prompt_name="drafter",
         user_message="\n\n".join(parts),
         agent_name="drafter",
         temperature=0.5,   # a little warmth: this is customer-facing writing
     )
+    if not isinstance(result, str):
+        raise TypeError(f"Expected a string from call_text(), got {type(result).__name__}")
+    return result
