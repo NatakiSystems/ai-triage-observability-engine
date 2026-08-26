@@ -291,18 +291,21 @@ with tab_audit:
             for ev in ticket_events:
                 timestamp = str(ev.get("timestamp", "00:00:00"))
                 event_type = str(ev.get("event_type", "event"))
-                payload = ev.get("payload") or {}
-                if not isinstance(payload, dict):
-                    payload = {"raw_data": payload}
+                payload = ev.get("payload") if isinstance(ev.get("payload"), dict) else {}
 
+                # Step 1: Triage
                 if event_type == "triage_complete":
                     with st.expander(f"🏷️ [{timestamp}] Step 1: Triage Classification Complete", expanded=True):
                         cat = payload.get("category") or ev.get("category", "N/A")
                         pri = payload.get("priority") or ev.get("priority", "P2")
                         conf = payload.get("confidence") or ev.get("confidence", "N/A")
                         st.write(f"**Category:** {cat} | **Priority:** {pri} | **Confidence:** {conf}")
-                        st.json(payload if payload != {"raw_data": None} else ev)
+                        
+                        detail_data = payload if payload else ev
+                        if detail_data:
+                            st.json(detail_data)
 
+                # Step 2: Policy Retrieval
                 elif event_type == "policy_retrieved":
                     with st.expander(f"📚 [{timestamp}] Step 2: Policy Retrieved (Tool Call)", expanded=True):
                         chunk = payload.get("chunk_id") or payload.get("policy_id") or ev.get("chunk_id", "POL-REF")
@@ -310,6 +313,7 @@ with tab_audit:
                         st.write(f"**Policy Ref:** {chunk}")
                         st.info(text_val)
 
+                # Step 3: Drafting
                 elif event_type == "draft_created":
                     attempt_no = payload.get("attempt") or ev.get("attempt", 1)
                     draft_val = payload.get("draft") or payload.get("draft_reply") or ev.get("draft", "")
@@ -322,6 +326,7 @@ with tab_audit:
                             key=f"trace_draft_{selected_ticket}_{timestamp}",
                         )
 
+                # Step 4: Critic QA
                 elif event_type == "critic_verdict":
                     with st.expander(f"⚖️ [{timestamp}] Step 4: Critic QA Audit", expanded=True):
                         passed = payload.get("passed", ev.get("passed", False))
@@ -330,15 +335,22 @@ with tab_audit:
                             st.success(f"Audit Passed: {reason_str}")
                         else:
                             st.error(f"Audit Flagged: {reason_str}")
-                        st.json(payload if payload != {"raw_data": None} else ev)
+                        
+                        detail_data = payload if payload else ev
+                        if detail_data:
+                            st.json(detail_data)
 
+                # Step 5: Final Resolution
                 elif event_type in ("auto_sent", "escalated_to_human"):
                     with st.expander(f"🚀 [{timestamp}] Step 5: Dispatch Action", expanded=True):
                         if event_type == "auto_sent":
                             st.success("✅ **Status:** Auto-Sent directly to customer.")
                         else:
                             st.warning("⚠️ **Status:** Escalated to human approval queue.")
-                        st.json(payload if payload != {"raw_data": None} else ev)
+                        
+                        detail_data = payload if payload else ev
+                        if detail_data:
+                            st.json(detail_data)
 
                 else:
                     with st.expander(f"📌 [{timestamp}] Event: {event_type}", expanded=False):
