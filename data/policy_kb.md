@@ -24,7 +24,7 @@ OWNER: Mitchy
 *   Damaged items: ask for a photo before issuing a replacement. Replacements ship within 2 business days of the photo being received.
 *   Opened consumable items cannot be returned.
 *   Exchanges are processed as a return plus a new order. We cannot do a direct swap.
-* After approval, a prepaid return label with be generated and emailed to the customer. Ensure the email includes the label, packing instructions, and required return-by date. 
+*   After approval, a prepaid return label will be generated and emailed to the customer. Ensure the email includes the label, packing instructions, and required return-by date. 
 
 ## other
 *   If a ticket does not fit billing, technical, or returns, do not attempt to resolve it.
