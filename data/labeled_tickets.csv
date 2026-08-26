@@ -1,0 +1,5 @@
+ticket_id,expected_category,expected_needs_human,notes
+NS-1001,billing,FALSE,clear duplicate charge
+NS-1006,billing,TRUE,mentions contacting a lawyer
+NS-1008,returns,TRUE,refund over $100
+NS-1010,other,FALSE,general pricing question

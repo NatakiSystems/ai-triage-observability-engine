@@ -115,10 +115,16 @@ def summarize(log_path):
     else:
         avg_attempts = 0
 
-    # TODO (Nataki): add elapsed wall-clock time. Log a "run_started" event in
-    # main.py, then subtract its timestamp from the last event's timestamp.
-    # Turnaround time is one of the four questions the pitch has to answer, so
-    # we need a real number for it.
+    # Calculate elapsed wall-clock time and speed per ticket
+    if events:
+        started = datetime.fromisoformat(events[0]["timestamp"])
+        ended = datetime.fromisoformat(events[-1]["timestamp"])
+        elapsed_seconds = max(0.0, (ended - started).total_seconds())
+    else:
+        elapsed_seconds = 0.0
+
+    seconds_per_ticket = round(elapsed_seconds / total, 2) if total else 0.0
+
     return {
         "log_file": log_path,
         "tickets_processed": total,
@@ -126,5 +132,7 @@ def summarize(log_path):
         "escalated_to_human": counts.get("escalated_to_human", 0),
         "automation_rate": round(auto / total * 100, 1) if total else 0,
         "avg_attempts_per_ticket": round(avg_attempts, 2),
+        "elapsed_seconds": round(elapsed_seconds, 2),
+        "seconds_per_ticket": seconds_per_ticket,
         "event_counts": counts,
     }

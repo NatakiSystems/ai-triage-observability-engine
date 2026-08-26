@@ -1,3 +1,4 @@
+# Reviewed by Lance - confirmed load_tickets() and structure, 8/19
 """
 Ticket source: loads incoming tickets from our fake "support inbox".
 
@@ -34,16 +35,34 @@ def load_tickets(limit=None):
     tickets = []
     with open(DATA_PATH, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for row in reader:
-            # TODO (Lance): a row with a missing column will blow up here.
-            # Wrap this in a try/except, skip bad rows, and print a warning.
-            tickets.append(Ticket(
-                ticket_id=row["ticket_id"],
-                customer_name=row["customer_name"],
-                subject=row["subject"],
-                body=row["body"],
-                received_at=row["received_at"],
-            ))
+        for row_number, row in enumerate(reader, start=2):
+            try:
+                # TODO (Lance): a row with a missing column will blow up here.
+                # Wrap this in a try/except, skip bad rows, and print a warning.
+                tickets.append(Ticket(
+                    ticket_id=row["ticket_id"],
+                    customer_name=row["customer_name"],
+                    subject=row["subject"],
+                    body=row["body"],
+                    received_at=row["received_at"],
+                ))
+            except Exception as e:
+                print(f" WARNING: skipping row {row_number} in tickets.csv - {e}")
+                continue   
+
             if limit and len(tickets) >= limit:
                 break
     return tickets
+
+def load_tickets_from_db(limit=None):
+    """Same as load_tickets, but reads from SQLite."""
+    import sqlite3
+    db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "tickets.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    query = "SELECT * FROM tickets ORDER BY received_at"
+    if limit:
+        query += f" LIMIT {int(limit)}"
+    rows = conn.execute(query).fetchall()
+    conn.close()
+    return [Ticket(**dict(row)) for row in rows]
