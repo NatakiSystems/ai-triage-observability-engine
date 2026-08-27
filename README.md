@@ -133,7 +133,6 @@ streamlit run streamlit_app.py
 
 > **Live Demo:** Access the hosted dashboard at [ai-triage-observability-engine.streamlit.app](https://ai-triage-observability-engine.streamlit.app)
 >
-> ---
 
 ---
 
