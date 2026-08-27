@@ -135,8 +135,10 @@ streamlit run streamlit_app.py
 >
 > ---
 
+---
+
 ## Demo & System Walkthrough
 
-[🎬 Watch Live Multi-Agent System Demo (1080p) [(https://canva.link/northstar-triage-demo)]
+[🎬 Watch Live Multi-Agent System Demo (1080p)](https://canva.link/northstar-triage-demo)
 
 *Demonstrating real-time intent triage, automated policy retrieval, and the Streamlit supervisor review queue in action.*
