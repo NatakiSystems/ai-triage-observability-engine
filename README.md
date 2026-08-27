@@ -102,15 +102,17 @@ streamlit run streamlit_app.py
 
 ---
 
-## 7. Engineering Team Roster
+### 7. Engineering Team & Project Credits
 
-* **Orchestrator Engineer:** Enrique Quezada (`orchestrator.py`, `main.py`)
-* **Integration Engineer:** Lance Gonzalez (`tools/policy_lookup.py`, `tickets.csv`)
-* **Prompt Engineer:** Mitchy Derose (`prompts/drafter.md`, `agents/drafter.py`)
-* **QA / Critic Engineer:** Julian Seifurth (`agents/critic.py`, `prompts/critic.md`)
-* **Logging & Observability Engineer:** Nataki Boykin (`agents/triage.py`, `logging_utils.py`, `approval_queue.py, streamlit_app.py`)
-
----
+* **Logging, Observability & UI Engineer | Brand Designer:**  
+  **Nataki Boykin**  
+  * *Code & Architecture:* `agents/triage.py`, `logging_utils.py`, `approval_queue.py`, `streamlit_app.py`  
+  * *Visual Identity & Asset Design:* `northstar_support_logo.png`, `team_logo.png`
+* **Orchestrator Engineer:** Enrique Quezada (`orchestrator.py`, `state.py`, `main.py`)
+* **Integration Engineer:** Lance Gonzalez (`tools/ticket_source.py`, `tools/policy_lookup.py`, `data/tickets.csv`)
+* **Prompt Engineer:** Mitchy Derose (`prompts/triage.md`, `prompts/drafter.md`, `agents/drafter.py`, `data/policy_kb.md`)
+* **QA / Critic Engineer:** Julian Seifterth (`agents/critic.py`, `prompts/critic.md`)
+* **Shared Infrastructure:** `llm_client.py` (LangChain client orchestration and mock mode runtime)
 
 ---
 
@@ -127,5 +129,6 @@ The system features an enterprise-grade **Streamlit Governance & Observability C
 ```bash
 # Launch the dashboard locally
 streamlit run streamlit_app.py
+```
 
-> **Live Demo:** Access the hosted dashboard at `https://<your-streamlit-app-url>.streamlit.app`
+> **Live Demo:** Access the hosted dashboard at [ai-triage-observability-engine.streamlit.app](https://ai-triage-observability-engine.streamlit.app)
