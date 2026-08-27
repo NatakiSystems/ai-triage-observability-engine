@@ -1,8 +1,8 @@
 .env
 *.key
 credentials.json
-logs/*.jsonl
-logs/approval_queue.json
+#logs/*.jsonl
+#logs/approval_queue.json
 __pycache__/
 *.py[cod]
 .venv/
