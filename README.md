@@ -132,3 +132,11 @@ streamlit run streamlit_app.py
 ```
 
 > **Live Demo:** Access the hosted dashboard at [ai-triage-observability-engine.streamlit.app](https://ai-triage-observability-engine.streamlit.app)
+>
+> ---
+
+## Demo & System Walkthrough
+
+[🎬 Watch Live Multi-Agent System Demo (1080p) (https://canva.link/northstar-triage-demo)
+
+*Demonstrating real-time intent triage, automated policy retrieval, and the Streamlit supervisor review queue in action.*
